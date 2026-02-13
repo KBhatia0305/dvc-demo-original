@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 import logging
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # -------------------- logging config --------------------
 logger = logging.getLogger("feature_engineering")
@@ -47,15 +47,15 @@ def load_params(path: str = "params.yaml") -> dict:
 def save_data(train_df: pd.DataFrame, test_df: pd.DataFrame, output_dir: str):
     try:
         os.makedirs(output_dir, exist_ok=True)
-        train_df.to_csv(os.path.join(output_dir, "train_processed.csv"), index=False)
-        test_df.to_csv(os.path.join(output_dir, "test_processed.csv"), index=False)
+        train_df.to_csv(os.path.join(output_dir, "train_processed_tfidf.csv"), index=False)
+        test_df.to_csv(os.path.join(output_dir, "test_processed_tfidf.csv"), index=False)
         logger.info("Feature data saved successfully")
     except Exception:
         logger.error("Failed to save feature data", exc_info=True)
         raise
 
 #  feature engineering 
-def build_bow_features(train_df: pd.DataFrame, test_df: pd.DataFrame, max_features: int):
+def build_tfidf_features(train_df: pd.DataFrame, test_df: pd.DataFrame, max_features: int):
     try:
         train_df = train_df.copy()
         test_df = test_df.copy()
@@ -69,15 +69,15 @@ def build_bow_features(train_df: pd.DataFrame, test_df: pd.DataFrame, max_featur
         X_test = test_df["content"].values
         y_test = test_df["sentiment"].values
 
-        vectorizer = CountVectorizer(max_features=max_features)
+        vectorizer = TfidfVectorizer(max_features=max_features)
 
-        X_train_bow = vectorizer.fit_transform(X_train)
-        X_test_bow = vectorizer.transform(X_test)
+        X_train_tfidf = vectorizer.fit_transform(X_train)
+        X_test_tfidf = vectorizer.transform(X_test)
 
-        train_features = pd.DataFrame(X_train_bow.toarray())
+        train_features = pd.DataFrame(X_train_tfidf.toarray())
         train_features["label"] = y_train
 
-        test_features = pd.DataFrame(X_test_bow.toarray())
+        test_features = pd.DataFrame(X_test_tfidf.toarray())
         test_features["label"] = y_test
 
         return train_features, test_features
@@ -95,7 +95,7 @@ def main():
         train_data = load_data("data/interim/train_interim.csv")
         test_data = load_data("data/interim/test_interim.csv")
 
-        train_features, test_features = build_bow_features(train_data, test_data,max_features)
+        train_features, test_features = build_tfidf_features(train_data, test_data,max_features)
 
         save_data(
             train_features,

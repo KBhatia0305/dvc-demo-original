@@ -89,7 +89,7 @@ def main() -> None:
         logger.info("Starting model evaluation stage")
 
         clf = load_model("models/model.pkl")
-        test_data = load_test_data("data/processed/test_processed.csv")
+        test_data = load_test_data("data/processed/test_processed_tfidf.csv")
 
         metrics = evaluate_model(clf, test_data)
         save_metrics(metrics, "reports/metrics.json")

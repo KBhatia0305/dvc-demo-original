@@ -88,7 +88,7 @@ def main() -> None:
 
         n_estimators,learning_rate= load_params(path='params.yaml')
 
-        X_train, y_train = load_training_data("./data/processed/train_processed.csv")
+        X_train, y_train = load_training_data("./data/processed/train_processed_tfidf.csv")
 
         model = train_model(X_train, y_train, n_estimators, learning_rate)
 
